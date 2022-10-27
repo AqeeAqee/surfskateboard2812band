@@ -12,7 +12,7 @@ function setStripe () {
         LedsCount = 0
     }
     strip.clear()
-    strip.setBrightness(maxBrightness)
+    strip.setBrightness(bgBrightness + LedsCount * 3)
     range = strip.range(0, LedsCount)
     range.showRainbow(Hue, Hue)
     strip.setBrightness(bgBrightness)
@@ -44,13 +44,12 @@ let sum = 0
 let range: neopixel.Strip = null
 let strip: neopixel.Strip = null
 let LedsCount = 0
-let asValues: number[] = []
-let ayValues: number[] = []
-let axValues: number[] = []
 let baseColor = 0
 let Hue = 0
 let bgBrightness = 0
-let maxBrightness = 0
+let asValues: number[] = []
+let ayValues: number[] = []
+let axValues: number[] = []
 let strip2: neopixel.Strip = null
 let strip1: neopixel.Strip = null
 strip1 = neopixel.create(DigitalPin.P15, 40, NeoPixelMode.RGB)
@@ -63,7 +62,18 @@ basic.showLeds(`
     . # . # .
     . . . . .
     `)
-maxBrightness = 33
+initValues(axValues)
+initValues(ayValues)
+initValues(asValues)
+let maxBrightness = 33
+for (let iBright = 0; iBright <= maxBrightness; iBright++) {
+    setNeopixelRainbow(iBright)
+    basic.pause(8)
+}
+for (let iBright = 0; iBright <= maxBrightness; iBright++) {
+    setNeopixelRainbow(maxBrightness - iBright)
+    basic.pause(8)
+}
 maxBrightness = 88
 bgBrightness = 4
 // pink=330
@@ -72,9 +82,23 @@ bgBrightness = 4
 // 
 Hue = 10
 baseColor = neopixel.hsl(Hue, 99, 55)
-initValues(axValues)
-initValues(ayValues)
-initValues(asValues)
+for (let iBright = 0; iBright <= maxBrightness; iBright++) {
+    strip1.setBrightness(iBright)
+    strip2.setBrightness(iBright)
+    strip1.showColor(baseColor)
+    strip2.showColor(baseColor)
+    basic.pause(4)
+}
+for (let iBright = 0; iBright <= maxBrightness; iBright++) {
+    strip1.setBrightness(maxBrightness - iBright)
+    strip2.setBrightness(maxBrightness - iBright)
+    strip1.showColor(baseColor)
+    strip2.showColor(baseColor)
+    basic.pause(8)
+    if (maxBrightness - iBright <= bgBrightness) {
+        break;
+    }
+}
 loops.everyInterval(50, function () {
     if (input.buttonIsPressed(Button.A)) {
         Hue += -2
@@ -113,7 +137,7 @@ basic.forever(function () {
     if (newLedsCount >= LedsCount) {
         LedsCount = newLedsCount
     } else {
-        LedsCount += -1.5
+        LedsCount += -2
     }
     strip = strip1
     setStripe()
